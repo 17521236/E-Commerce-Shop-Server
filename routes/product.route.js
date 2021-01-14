@@ -45,4 +45,27 @@ router.get('/:prodId', async (req, res) => {
 
 })
 
+// Get all PRODUCT by CATEGORY ID
+router.get('/category/:catId', async (req, res) => {
+
+    const page = req.query.page !== undefined && parseInt(req.query.page) > 0 ? parseInt(req.query.page) : 1;
+    const limit = req.query.limit !== undefined && parseInt(req.query.limit) > 0 ? parseInt(req.query.limit) : 10;
+    const skip = page * limit - limit;
+
+    const categoryId = req.params.catId;
+    const products = await Product.find({ 'cat_id': categoryId }).skip(skip);
+    const count = products.length;
+
+    if (count > 0) {
+        res.status(200).send({
+            count,
+            products
+        })
+    } else {
+        res.send({
+            message: 'No products found'
+        })
+    }
+})
+
 module.exports = router;
